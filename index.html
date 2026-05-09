@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('https://images.unsplash.com/photo-1600405654086-4f130ff56349?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+  }
+
+  body::before {
+    content:"";
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.6);
+    z-index:0;
+  }
+
+  header {
+    position: relative;
+    z-index:1;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.2rem;
+  }
+
+  header p {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+
+  main {
+    position: relative;
+    z-index:1;
+    max-width: 1200px;
+    margin: auto;
+    padding: 1rem;
+  }
+
+  .months-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 1rem;
+  }
+
+  .month-button {
+    flex: 1 1 90px;
+    min-width: 90px;
+    text-align: center;
+    background: linear-gradient(90deg, #4b6cb7, #182848);
+    border: none;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    color: #fff;
+  }
+
+  .month-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255,255,255,0.5);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.5s ease;
+  }
+
+  table.show {
+    max-height: 2000px;
+    opacity: 1;
+  }
+
+  th, td {
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+
+  th {
+    background: linear-gradient(90deg, #182848, #4b6cb7);
+  }
+
+  tr:nth-child(even) {
+    background: rgba(255,255,255,0.05);
+  }
+
+  tr:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  caption {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #ffeb3b;
+  }
+
+  footer {
+    text-align: center;
+    padding: 1rem;
+    position: relative;
+    z-index:1;
+  }
+
+  @media (max-width: 600px){
+    .month-button {
+      flex: 1 1 70px;
+      font-size: 0.85rem;
+      padding: 6px 0;
+    }
+    th, td {
+      font-size: 0.75rem;
+      padding: 4px 6px;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Calendar - 2026</h1>
+  <p>Click a month to show days | Bangla Month (বাংলা) & Hijri Month (English)</p>
+</header>
+
+<main>
+  <div class="months-container" id="months-container"></div>
+  <div id="calendar-container"></div>
+</main>
+
+<footer>
+  <p>Created by SheFaul-1830  | 2026</p>
+</footer>
+
+<script>
+const banglaMonths = ["পৌষ","মাঘ","ফাল্গুন","চৈত্র","বৈশাখ","জ্যৈষ্ঠ","আষাঢ়","শ্রাবণ","ভাদ্র","আশ্বিন","কার্তিক","অগ্রহায়ণ"];
+const hijriMonths = ["Muharram","Safar","Rabi' al-Awwal","Rabi' al-Thani","Jumada al-Awwal","Jumada al-Thani","Rajab","Sha'ban","Ramadan","Shawwal","Dhu al-Qi'dah","Dhu al-Hijjah"];
+const banglaMonthMap = [
+  {start:[14,0]},{start:[13,1]},{start:[14,2]},{start:[14,3]},
+  {start:[15,4]},{start:[15,5]},{start:[16,6]},{start:[16,7]},
+  {start:[16,8]},{start:[17,9]},{start:[16,10]},{start:[16,11]}
+];
+const daysOfWeek = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function getBanglaMonth(date){
+  for(let i=banglaMonthMap.length-1; i>=0; i--){
+    const [day,month] = banglaMonthMap[i].start;
+    if(date.getMonth() > month || (date.getMonth() === month && date.getDate() >= day)){
+      return banglaMonths[i];
+    }
+  }
+  return banglaMonths[11];
+}
+
+function getHijriMonth(date){
+  const startHijri = new Date(2026,0,1);
+  const daysDiff = Math.floor((date - startHijri)/(1000*60*60*24));
+  const monthIndex = Math.floor(daysDiff/29.53) % 12;
+  return hijriMonths[monthIndex];
+}
+
+function createCalendar(){
+  const monthsContainer = document.getElementById("months-container");
+  const calendarContainer = document.getElementById("calendar-container");
+
+  for(let m=0;m<12;m++){
+    const monthDate = new Date(2026,m,1);
+    const monthName = monthDate.toLocaleString('en-US',{month:'long'});
+
+    // Create button
+    const btn = document.createElement("button");
+    btn.className = "month-button";
+    btn.textContent = monthName;
+    monthsContainer.appendChild(btn);
+
+    // Create table
+    const table = document.createElement("table");
+    table.id = `table-${m}`;
+    const caption = document.createElement("caption");
+    caption.textContent = monthName + " 2026";
+    table.appendChild(caption);
+
+    const thead = document.createElement("thead");
+    const trHead = document.createElement("tr");
+    ["Day","Date","Bangla Month","Hijri Month"].forEach(h=>{
+      const th = document.createElement("th");
+      th.textContent = h;
+      trHead.appendChild(th);
+    });
+    thead.appendChild(trHead);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    const daysInMonth = new Date(2026,m+1,0).getDate();
+    for(let d=1; d<=daysInMonth; d++){
+      const date = new Date(2026,m,d);
+      const tr = document.createElement("tr");
+      [daysOfWeek[date.getDay()], d, getBanglaMonth(date), getHijriMonth(date)].forEach(txt=>{
+        const td = document.createElement("td");
+        td.textContent = txt;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    }
+    table.appendChild(tbody);
+    calendarContainer.appendChild(table);
+
+    // Button click
+    btn.addEventListener("click",()=>{
+      const allTables = document.querySelectorAll("table");
+      allTables.forEach(t=>{
+        if(t!==table){ t.classList.remove("show"); }
+      });
+      table.classList.toggle("show");
+
+      // Scroll smoothly to top of the table
+      table.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+  }
+}
+
+createCalendar();
+</script>
+
+</body>
+</html>
